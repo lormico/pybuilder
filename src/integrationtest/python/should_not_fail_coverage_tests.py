@@ -2,7 +2,7 @@
 #
 #   This file is part of PyBuilder
 #
-#   Copyright 2011-2020 PyBuilder Team
+#   Copyright 2011-2021 PyBuilder Team
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -21,34 +21,35 @@ import unittest
 from itest_support import IntegrationTestSupport
 
 
-class Test(IntegrationTestSupport):
+class DummyTest(IntegrationTestSupport):
     def test(self):
         self.write_build_file("""
-from pybuilder.core import task, depends, optional
+from pybuilder.core import use_plugin
 
-@task
-def task_a(project):
-    project.set_property("a", False)
+use_plugin("python.core")
+use_plugin("python.unittest")
+use_plugin("python.coverage")
+""")
 
-@task
-@depends("task_a")
-def task_b(project):
-    project.set_property("a", True)
+        self.create_directory("src/main/python")
+        self.create_directory("src/unittest/python")
 
-@task
-@depends("task_a", optional("task_b"))
-def task_c(project):
-    project.set_property("c", True)
+        self.write_file("src/main/python/code.py", """
+def return_one():
+    return 1
+        """)
+
+        self.write_file("src/unittest/python/code_tests.py", """
+import unittest
+import code
+
+class CodeTests(unittest.TestCase):
+    def test_code(self):
+        self.assertEqual(code.return_one(), 1)
         """)
 
         reactor = self.prepare_reactor()
-        project = reactor.project
-        reactor.execution_manager.resolve_dependencies(exclude_optional_tasks=["task_b"])
-
-        reactor.build("task_c")
-        self.assertTrue(project.get_property("a") is not None)
-        self.assertFalse(project.get_property("a"))
-        self.assertTrue(project.get_property("c"))
+        reactor.build("coverage")
 
 
 if __name__ == "__main__":

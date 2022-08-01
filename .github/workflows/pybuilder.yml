@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - test_coverage_failure_on_windows
 jobs:
   build-primary:
     runs-on: ${{ matrix.os }}
@@ -35,7 +35,7 @@ jobs:
           with-homebrew: 'false'
           deploy-on-python: '["3.10"]'
           deploy-on-os: '["Linux"]'
-          deploy-on-branch: '["refs/heads/master"]'
+          deploy-on-branch: '["refs/heads/test_coverage_failure_on_windows"]'
   build-secondary:
     runs-on: ${{ matrix.os }}
     continue-on-error: false

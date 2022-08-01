@@ -30,7 +30,7 @@ runs:
         inputs.with-venv == 'true'
       shell: bash
       run: |
-        echo "PYB_EXTRA_ARGS=+upload" >> $GITHUB_ENV
+        echo "PYB_EXTRA_ARGS=" >> $GITHUB_ENV
     - name: Build
       if: |
         !(inputs.with-homebrew == 'true' && runner.os != 'macOS' ||
